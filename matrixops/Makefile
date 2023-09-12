@@ -10,7 +10,7 @@ DEBUG=-DDEBUG
 CC=				gcc
 OPT=			-O3
 CFLAGS=			-g -std=c11
-TARGET=			engine
+TARGET=			exe
 DTARGET=		d$(TARGET)
 
 all: $(BIN_DIR) $(TARGET)
