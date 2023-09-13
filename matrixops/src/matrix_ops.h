@@ -1,8 +1,10 @@
 #include <assert.h>
 #include "matrix.h"
 
-matrix* matmul(matrix* mat1, matrix* mat2);
-matrix* elwisemul(matrix* mat1, matrix* mat2);
+matrix_t* matmul(matrix_t* mat1, matrix_t* mat2);
+matrix_t* matmul3d(matrix_t* mat1, matrix_t* mat2);
+matrix_t* elwisemul(matrix_t* mat1, matrix_t* mat2);
+matrix_t* transpose(matrix_t* mat);
 
-matrix* relu(matrix* mat1);
-matrix* sigmoid(matrix* mat1);
+matrix_t* relu(matrix_t* mat1);
+matrix_t* sigmoid(matrix_t* mat1);
