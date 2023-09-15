@@ -1,2 +1,5 @@
 **/.DS_Store
 matrix_tracker.trace/*
+*.o
+exe
+dexe

@@ -43,6 +43,7 @@ void show(matrix_t* mat){
     printf("\n\n");
 }
 
+// free memory allocated by a matrix
 void matrix_destroy(matrix_t* mat){
     // free data occupied by matrix
     free(mat->data);

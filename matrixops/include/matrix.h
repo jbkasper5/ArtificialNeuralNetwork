@@ -2,15 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-
-#ifdef DDEBUG
-#define p(...) (printf(__VA_ARGS__))
-#else 
-#define p(...)
-#endif
-
-#define MATSIZE(m) (m->rows * m->cols)
-#define get(mat, i, j) (mat->data[i * mat->cols + j])
+#include "macros.h"
 
 typedef struct matrix_s{
     uint32_t rows;

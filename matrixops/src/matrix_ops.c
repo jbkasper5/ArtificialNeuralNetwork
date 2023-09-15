@@ -1,5 +1,6 @@
 #include "matrix_ops.h"
 
+// naive matrix multiplication
 matrix_t* matmul(matrix_t* mat1, matrix_t* mat2){
     assert(mat1->cols == mat2->rows);
     matrix_t* ret_mat = zero_matrix(mat1->rows, mat2->cols);
@@ -16,9 +17,18 @@ matrix_t* matmul(matrix_t* mat1, matrix_t* mat2){
     return ret_mat;
 }
 
-// matrix_t* matmul3d(matrix_t* mat3d, matrix_t* mat2d){
+// create 2 partitions per matrix, and perform 4 smaller sub-multiplications
+// this function partitions m1 by dividing the columns by 2
+matrix_t* matmul_optim1(matrix_t* mat1, matrix_t* mat2){
+    assert(mat1->cols == mat2->rows);
+    matrix_t* ret_mat = zero_matrix(mat1->rows, mat2->cols);
+    uint32_t partition1_size = mat1->cols / 2;
+    uint32_t partition2_size = mat2->cols - partition1_size;
+    for(int m1row = 0; m1row < mat1->cols; ++m1row){
 
-// }
+    }
+    return ret_mat;
+}
 
 matrix_t* elwisemul(matrix_t* mat1, matrix_t* mat2){
     assert((mat1->rows == mat2->rows) && (mat1->cols == mat2->cols));
