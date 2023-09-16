@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h> // memcpy
 #include "matrix.h"
 
 // naive approach
@@ -16,4 +17,8 @@ matrix_t* transpose(matrix_t* mat);
 // apply activation functions element wise in the matrix
 matrix_t* relu(matrix_t* m);
 matrix_t* sigmoid(matrix_t* m);
+
+matrix_t* relu_derivative(matrix_t* m);
+matrix_t* sigmoid_derivative(matrix_t* m);
+
 matrix_t* softmax(matrix_t* m, uint32_t dim);

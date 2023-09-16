@@ -19,16 +19,30 @@ matrix_t* one_matrix(uint32_t rows, uint32_t cols){
     return mat;
 }
 
-// initialize a matrix of size (rows, cols) with random values
-matrix_t* rand_matrix(uint32_t rows, uint32_t cols){
+matrix_t* randi_matrix(uint32_t rows, uint32_t cols, int32_t lower_bound, int32_t upper_bound){
     matrix_t* mat = (matrix_t*)malloc(sizeof(matrix_t));
     mat->rows = rows;
     mat->cols = cols;
-    mat->data = (double*)malloc(rows * cols * sizeof(double));
-    int lower = 1;
-    int upper = 10;
-    for(int i = 0; i < (MATSIZE(mat)); ++i) mat->data[i] = (rand() % (upper - lower + 1)) + lower;
+    mat->data = (double*)malloc(MATSIZE(mat) * sizeof(double));
+    for(int i = 0; i < (MATSIZE(mat)); ++i) mat->data[i] = (rand() % (upper_bound - lower_bound + 1)) + lower_bound;
     return mat;
+}
+
+matrix_t* randd_matrix(uint32_t rows, uint32_t cols, double lower_bound, double upper_bound){
+    return NULL;
+}
+
+matrix_t* he_weight_matrix(uint32_t input_dim, uint32_t output_dim){
+    matrix_t* weight_matrix = (matrix_t*)malloc(sizeof(matrix_t));
+    weight_matrix->rows = output_dim;
+    weight_matrix->cols = input_dim;
+    weight_matrix->data = (double*)malloc(MATSIZE(weight_matrix) * sizeof(double));
+    for(int i = 0; i < MATSIZE(weight_matrix); ++i) weight_matrix->data[i] = sample_normal(0, sqrt(2 / (double)input_dim));
+    return weight_matrix;
+}
+
+matrix_t* bias_matrix(uint32_t layer_dim){
+    return NULL;
 }
 
 // display a matrix
@@ -50,4 +64,28 @@ void matrix_destroy(matrix_t* mat){
 
     // free the matrix struct
     free(mat);
+}
+
+// sampling from a given uniform distribution using the box-muller method
+double sample_normal(double mean, double standard_deviation){
+    static double cached_random_value = 0;
+    double res;
+    if(!cached_random_value){
+        double u1, u2, radius;
+        do{
+            u1 = 2 * rand() / ((double)RAND_MAX - 1);
+            u2 = 2 * rand() / ((double)RAND_MAX - 1);
+            radius = pow(u1, 2) + pow(u2, 2);
+        }while(radius == 0 || radius >= 1);
+        double temp = sqrt(-2.0 * log(radius) / radius);
+        res = u1 * temp;
+        double res2 = u2 * temp;
+        cached_random_value = res2;
+    }else{
+        res = cached_random_value;
+        cached_random_value = 0;
+    }
+
+    // apply shifts to the standard uniform distribution
+    return (res * standard_deviation) + mean;
 }

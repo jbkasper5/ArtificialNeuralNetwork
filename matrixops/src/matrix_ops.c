@@ -25,10 +25,35 @@ matrix_t* matmul_optim1(matrix_t* mat1, matrix_t* mat2){
     uint32_t partition1_size = mat1->cols / 2;
     uint32_t partition2_size = mat2->cols - partition1_size;
     for(int m1row = 0; m1row < mat1->cols; ++m1row){
-
+        
     }
     return ret_mat;
 }
+
+matrix_t* transpose(matrix_t* m){
+    return NULL;
+}
+
+matrix_t* relu(matrix_t* m){
+    matrix_t* new_mat = zero_matrix(m->rows, m->cols);
+    for(int i = 0; i < MATSIZE(m); ++i) new_mat->data[i] = MAX(m->data[i], 0);
+    return new_mat;
+}
+
+matrix_t* sigmoid(matrix_t* m){
+    matrix_t* new_mat = zero_matrix(m->rows, m->cols);
+    for(int i = 0; i < MATSIZE(m); ++i) new_mat->data[i] = (1 / (double)(1 + exp(-m->data[i])));
+    return new_mat;
+}
+
+matrix_t* relu_derivative(matrix_t* m){
+    return NULL;
+}
+
+matrix_t* sigmoid_derivative(matrix_t* m){
+    return NULL
+}
+
 
 matrix_t* elwisemul(matrix_t* mat1, matrix_t* mat2){
     assert((mat1->rows == mat2->rows) && (mat1->cols == mat2->cols));
