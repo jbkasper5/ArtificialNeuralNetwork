@@ -31,19 +31,45 @@ matrix_t* matmul_optim1(matrix_t* mat1, matrix_t* mat2){
 }
 
 matrix_t* transpose(matrix_t* m){
-    return NULL;
+    // switch every (i, j) for (j, i)
+    matrix_t* mat_transpose = zero_matrix(m->cols, m->rows);
+    for(int i = 0; i < mat_transpose->rows; ++i){
+        for(int j = 0; j < mat_transpose->cols; ++j){
+            mat_transpose->data[i * mat_transpose->cols + j] = GET(m, j, i);
+        }
+    }
+    return mat_transpose;
 }
 
-matrix_t* relu(matrix_t* m){
-    matrix_t* new_mat = zero_matrix(m->rows, m->cols);
-    for(int i = 0; i < MATSIZE(m); ++i) new_mat->data[i] = MAX(m->data[i], 0);
-    return new_mat;
+matrix_t* sum(matrix_t* mat1, matrix_t* mat2, int in_place){
+    P("Mat1: [%d, %d]\n", mat1->rows, mat1->cols);
+    P("Mat2: [%d, %d]\n", mat2->rows, mat2->cols);
+    assert(mat1->rows == mat2->rows);
+    matrix_t* ret_mat = (in_place) ? zero_matrix(mat1->rows, mat2->cols) : mat1;
+    if(ret_mat->cols == mat2->cols){
+        for(int i = 0; i < MATSIZE(ret_mat); ++i) ret_mat->data[i] += mat2->data[i];
+    }else if(mat2->cols == 1){
+        for(int i = 0; i < ret_mat->rows; ++i){
+            for(int j = 0; j < ret_mat->cols; ++j){
+                ret_mat->data[i * ret_mat->cols + j] += mat2->data[i];
+            }
+        }
+    }else{
+        exit(1);
+    }
+    return ret_mat;
 }
 
-matrix_t* sigmoid(matrix_t* m){
-    matrix_t* new_mat = zero_matrix(m->rows, m->cols);
-    for(int i = 0; i < MATSIZE(m); ++i) new_mat->data[i] = (1 / (double)(1 + exp(-m->data[i])));
-    return new_mat;
+matrix_t* relu(matrix_t* m, int in_place){
+    matrix_t* ret_mat = (in_place) ? zero_matrix(m->rows, m->cols) : m;
+    for(int i = 0; i < MATSIZE(ret_mat); ++i) ret_mat->data[i] = MAX(m->data[i], 0);
+    return ret_mat;
+}
+
+matrix_t* sigmoid(matrix_t* m, int in_place){
+    matrix_t* ret_mat = (in_place) ? zero_matrix(m->rows, m->cols) : m;
+    for(int i = 0; i < MATSIZE(m); ++i) ret_mat->data[i] = (1 / (double)(1 + exp(-m->data[i])));
+    return ret_mat;
 }
 
 matrix_t* relu_derivative(matrix_t* m){
@@ -51,7 +77,7 @@ matrix_t* relu_derivative(matrix_t* m){
 }
 
 matrix_t* sigmoid_derivative(matrix_t* m){
-    return NULL
+    return NULL;
 }
 
 

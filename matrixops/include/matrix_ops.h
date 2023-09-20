@@ -14,9 +14,11 @@ matrix_t* elwisemul(matrix_t* mat1, matrix_t* mat2);
 // transpose a matrix
 matrix_t* transpose(matrix_t* mat);
 
+matrix_t* sum(matrix_t* mat1, matrix_t* mat2, int in_place);
+
 // apply activation functions element wise in the matrix
-matrix_t* relu(matrix_t* m);
-matrix_t* sigmoid(matrix_t* m);
+matrix_t* relu(matrix_t* m, int in_place);
+matrix_t* sigmoid(matrix_t* m, int in_place);
 
 matrix_t* relu_derivative(matrix_t* m);
 matrix_t* sigmoid_derivative(matrix_t* m);
