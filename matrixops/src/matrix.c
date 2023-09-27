@@ -19,6 +19,7 @@ matrix_t* one_matrix(uint32_t rows, uint32_t cols){
     return mat;
 }
 
+// random integer matrix
 matrix_t* randi_matrix(uint32_t rows, uint32_t cols, int32_t lower_bound, int32_t upper_bound){
     matrix_t* mat = (matrix_t*)malloc(sizeof(matrix_t));
     mat->rows = rows;
@@ -28,10 +29,12 @@ matrix_t* randi_matrix(uint32_t rows, uint32_t cols, int32_t lower_bound, int32_
     return mat;
 }
 
+// random double matrix
 matrix_t* randd_matrix(uint32_t rows, uint32_t cols, double lower_bound, double upper_bound){
     return NULL;
 }
 
+// random normally distributed weight matrix (using he initialization)
 matrix_t* he_weight_matrix(uint32_t input_dim, uint32_t output_dim){
     matrix_t* weight_matrix = (matrix_t*)malloc(sizeof(matrix_t));
     weight_matrix->rows = output_dim;
@@ -41,8 +44,19 @@ matrix_t* he_weight_matrix(uint32_t input_dim, uint32_t output_dim){
     return weight_matrix;
 }
 
-matrix_t* bias_matrix(uint32_t layer_dim){
+// random uniformally distributed weight matrix (using xavier initialization)
+matrix_t* xavier_weight_matrix(uint32_t input_dim, uint32_t output_dim){
     return NULL;
+}
+
+// he bias matrix initialization
+matrix_t* he_bias_matrix(uint32_t layer_dim){
+    return he_weight_matrix(1, layer_dim);
+}
+
+// xavier bias matrix initialization
+matrix_t* xavier_bias_matrix(uint32_t layer_dim){
+    return xavier_weight_matrix(1, layer_dim);
 }
 
 // display a matrix

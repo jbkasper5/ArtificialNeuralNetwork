@@ -18,7 +18,8 @@ matrix_t* randi_matrix(uint32_t rows, uint32_t cols, int32_t lower_bound, int32_
 matrix_t* randd_matrix(uint32_t rows, uint32_t cols, double lower_bound, double upper_bound);           // check
 matrix_t* he_weight_matrix(uint32_t input_dim, uint32_t output_dim);
 matrix_t* xavier_weight_matrix(uint32_t input_dim, uint32_t output_dim);
-matrix_t* bias_matrix(uint32_t layer_dim);
+matrix_t* he_bias_matrix(uint32_t layer_dim);
+matrix_t* xavier_bias_matrix(uint32_t layer_dim);
 
 // sample from a uniform distribution
 double sample_normal(double mean, double standard_deviation);
