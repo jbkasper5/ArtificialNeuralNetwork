@@ -20,8 +20,7 @@ matrix_t* relu(matrix_t* m, uint32_t in_place);
 matrix_t* relu_derivative(matrix_t* m, uint32_t in_place);
 matrix_t* sigmoid(matrix_t* m, uint32_t in_place);
 matrix_t* sigmoid_derivative(matrix_t* m, uint32_t in_place);
-
-matrix_t* softmax(matrix_t* m, uint32_t dim, uint32_t in_place);
-matrix_t* softmax_derivative(matrix_t* m, uint32_t dim);
-matrix_t* softmax_jacobi_matrix(matrix_t* m, uint32_t dim);
+matrix_t* softmax(matrix_t* m, uint32_t in_place);
+matrix_t* softmax_jacobian(matrix_t* m);
+matrix_t** batched_softmax_jacobian(matrix_t* m);
 

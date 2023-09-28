@@ -10,11 +10,17 @@ int main(int argc, char** argv){
     time_t start = clock();
     // test_pass_1();
     // test_pass_2();
-    matrix_t* test_mat = he_weight_matrix(5, 3);
-    show(test_mat);
-    matrix_t* new_mat = softmax(test_mat, 1, FALSE);
-    show(test_mat);
-    show(new_mat);
+    matrix_t* test = zero_matrix(3, 1);
+    for(int i = 0; i < MATSIZE(test); ++i) test->data[i] = i + 1;
+
+    show(test);
+    matrix_t* sm = softmax(test, FALSE);
+    show(sm);
+    matrix_t** jacobain = batched_softmax_jacobian(sm);
+    show(jacobain[0]);
+    matrix_destroy(test);
+    matrix_destroy(sm);
+
     printf("Completed in: %f seconds.\n", (double)(clock() - start) / CLOCKS_PER_SEC);
     return 0;
 }
@@ -57,7 +63,7 @@ void test_pass_1(){
 
     matrix_t* z4 = matmul(weight4, activation_3);
     elwisesum(z4, bias4, TRUE);
-    matrix_t* activation_4 = sigmoid(z4, FALSE);
+    matrix_t* activation_4 = softmax(z4, FALSE);
     P("A4: \t[%d, %d]\n", activation_4->rows, activation_4->cols);
     
     show(activation_4);
