@@ -19,8 +19,13 @@ matrix_t* transpose(matrix_t* mat);
 matrix_t* relu(matrix_t* m, uint32_t in_place);
 matrix_t* relu_derivative(matrix_t* m, uint32_t in_place);
 matrix_t* sigmoid(matrix_t* m, uint32_t in_place);
-matrix_t* sigmoid_derivative(matrix_t* m, uint32_t in_place);
 matrix_t* softmax(matrix_t* m, uint32_t in_place);
 matrix_t* softmax_jacobian(matrix_t* m);
 matrix_t** batched_softmax_jacobian(matrix_t* m);
+
+// apply a given loss function
+matrix_t* mse(matrix_t* output, matrix_t* truth, uint32_t in_place);
+matrix_t* mse_derivative(matrix_t* output, matrix_t* truth, uint32_t in_place);
+matrix_t* binary_cross_entropy(matrix_t* output, matrix_t* truth, uint32_t in_place);
+matrix_t* binary_cross_entropy_derivative(matrix_t* output, matrix_t* truth, uint32_t in_place);
 

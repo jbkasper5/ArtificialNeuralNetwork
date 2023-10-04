@@ -4,6 +4,7 @@
 
 void test_pass_1();
 void test_pass_2();
+void test_pass_3();
 
 int main(int argc, char** argv){
     srand(time(NULL));
@@ -11,15 +12,19 @@ int main(int argc, char** argv){
     // test_pass_1();
     // test_pass_2();
     matrix_t* test = zero_matrix(3, 1);
-    for(int i = 0; i < MATSIZE(test); ++i) test->data[i] = i + 1;
-
+    for(int i = 0; i < MATSIZE(test); ++i) test->data[i] = (double)(i*2 + 1) / 10;
     show(test);
-    matrix_t* sm = softmax(test, FALSE);
-    show(sm);
-    matrix_t** jacobain = batched_softmax_jacobian(sm);
-    show(jacobain[0]);
+    matrix_t* sols = zero_matrix(3, 1);
+    sols->data[2] = 1;
+    show(sols);
+    matrix_t* loss = binary_cross_entropy(test, sols, FALSE);
+    show(loss);
+    matrix_t* loss_grad = binary_cross_entropy_derivative(test, sols, FALSE);
+    show(loss_grad);
     matrix_destroy(test);
-    matrix_destroy(sm);
+    matrix_destroy(sols);
+    matrix_destroy(loss);
+    matrix_destroy(loss_grad);
 
     printf("Completed in: %f seconds.\n", (double)(clock() - start) / CLOCKS_PER_SEC);
     return 0;
@@ -110,6 +115,64 @@ void test_pass_1(){
 }
 
 void test_pass_2(){
+    int len = 9;
+    int dims[] = {800, 400, 200, 100, 50, 25, 12, 6, 2};
+    int batch_size = 5;
+    double learning_rate = 0.05;
+
+    matrix_t** weights = (matrix_t**)malloc(sizeof(matrix_t*) * (len - 1));
+    matrix_t** dw = (matrix_t**)malloc(sizeof(matrix_t*) * (len - 1));
+    matrix_t** biases = (matrix_t**)malloc(sizeof(matrix_t*) * (len - 1));
+    matrix_t** db = (matrix_t**)malloc(sizeof(matrix_t*) * (len - 1));
+    matrix_t** sums = (matrix_t**)malloc(sizeof(matrix_t*) * (len - 1));
+    matrix_t** activations = (matrix_t**)malloc(sizeof(matrix_t*) * len);
+
+    for(int i = 0; i < (len - 1); ++i) weights[i] = he_weight_matrix(dims[i], dims[i + 1]);
+    for(int i = 0; i < (len - 1); ++i) biases[i] = he_bias_matrix(dims[i + 1]);
+
+    activations[0] = randi_matrix(dims[0], batch_size, 0, 10);
+
+    // compute forward pass
+    for(int i = 1; i < len; ++i){
+        P("Forward layer %d\n", i);
+        sums[i - 1] = elwisesum(matmul(weights[i - 1], activations[i - 1]), biases[i - 1], TRUE);
+        activations[i] = sigmoid(sums[i - 1], FALSE);
+    }
+
+    // compute backward pass
+    db[len - 2] = he_weight_matrix(batch_size, dims[len - 1]);
+    for(int i = len - 2; i > 0; --i){
+        P("Backprop layer %d\n", i);
+        matrix_t* a_transpose = transpose(activations[i]);
+        dw[i] = matmul(db[i], a_transpose);
+
+        matrix_t* w_transpose = transpose(dw[i]);
+        matrix_t* f_prime = sigmoid_derivative(sums[i - 1], FALSE);
+
+        db[i - 1] = elwisemul(matmul(w_transpose, db[i]), f_prime, TRUE);
+
+        matrix_destroy(f_prime);
+        matrix_destroy(a_transpose);
+        matrix_destroy(w_transpose);
+    }
+    matrix_t* a0_transpose = transpose(activations[0]);
+    dw[0] = matmul(db[0], a0_transpose);
+    matrix_destroy(a0_transpose);
+
+    // update gradients
+    for(int i = 0; i < (len - 1); ++i){   
+        P("Update to weight and bias %d\n", i);     
+        scalarmul(dw[i], learning_rate, TRUE);
+        elwisesum(weights[i], dw[i], TRUE);
+
+        matrix_t* dbsum = dimsum(db[i], 0);
+        scalarmul(dbsum, learning_rate, TRUE);
+        elwisesum(biases[i], dbsum, TRUE);
+        matrix_destroy(dbsum);
+    }
+}
+
+void test_pass_3(){
     int len = 9;
     int dims[] = {800, 400, 200, 100, 50, 25, 12, 6, 2};
     int batch_size = 5;
