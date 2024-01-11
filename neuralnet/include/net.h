@@ -1,4 +1,3 @@
-#include "matrixops.h"
 #include "dataloader.h"
 
 enum activation_functions{NOFUNC, SIGMOID, RELU, SOFTMAX};
