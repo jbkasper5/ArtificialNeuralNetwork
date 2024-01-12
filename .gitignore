@@ -3,3 +3,4 @@ matrix_tracker.trace/*
 *.o
 exe
 dexe
+config.h
