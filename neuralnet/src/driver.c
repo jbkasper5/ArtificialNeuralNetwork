@@ -9,5 +9,6 @@ int main(int argc, char** argv){
     network_destroy(net);
 
     dataloader_t* dataloader = create_mnist_dataloader(MNIST_TRAIN_PATH, MNIST_TEST_PATH);
+    read_training_batch(dataloader, BATCH_SIZE);
     return 0;
 }

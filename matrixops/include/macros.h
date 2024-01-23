@@ -6,8 +6,9 @@
 
 #define MATSIZE(m) (m->rows * m->cols)
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
-#define GET(mat, i, j) (mat->data[i * mat->cols + j])
-#define SET(mat, i, j, val) (mat->data[i * mat->cols + j] = val)
+#define GET(mat, i, j) (mat->data[(i) * (mat->cols) + (j)])
+#define SET(mat, i, j, val) (mat->data[(i) * (mat->cols) + (j)] = (val))
+#define DIM(mat) (printf("%s %d | Matrix dims: (%d, %d)\n", __FILE__, __LINE__, mat->rows, mat->cols));
 
 #define PI 3.141592653589793238462643383279502884197
 #define TRUE 1

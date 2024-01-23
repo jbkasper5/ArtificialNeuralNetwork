@@ -15,6 +15,7 @@ struct dataloader_s{
 
 struct splitloader_s{
     sampletuple_t* samples;
+    uint64_t iterator;
     uint64_t length;
 };
 
@@ -29,11 +30,10 @@ struct modeltuple_s{
 };
 
 dataloader_t* create_mnist_dataloader(char* trainpath, char* testpath);
-splitloader_t* assemble_train_paths(char* trainpath);
-splitloader_t* assemble_test_paths(char* testpath);
+splitloader_t* assemble_paths(char* trainpath);
 void dataloader_destroy(dataloader_t* dataloader);
 
-modeltuple_t* read_training_sample(dataloader_t* dataloader, int index);
-modeltuple_t* read_training_batch(dataloader_t* dataloader, int index, int batch_size);
-modeltuple_t* read_test_sample(dataloader_t* dataloader, int index);
-modeltuple_t* read_test_batch(dataloader_t* dataloader, int index, int batch_size);
+modeltuple_t* read_training_sample(dataloader_t* dataloader);
+modeltuple_t* read_training_batch(dataloader_t* dataloader, int batch_size);
+modeltuple_t* read_test_sample(dataloader_t* dataloader);
+modeltuple_t* read_test_batch(dataloader_t* dataloader, int batch_size);

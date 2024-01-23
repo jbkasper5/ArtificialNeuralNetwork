@@ -2,31 +2,31 @@
 
 dataloader_t* create_mnist_dataloader(char* trainpath, char* testpath){
     dataloader_t* dataloader = malloc(sizeof(dataloader_t));
-    dataloader->trainloader = assemble_train_paths(trainpath);
-    dataloader->testloader = assemble_test_paths(testpath);
+    dataloader->trainloader = assemble_paths(trainpath);
+    dataloader->testloader = assemble_paths(testpath);
     return dataloader;
 }
 
-splitloader_t* assemble_train_paths(char* trainpath){
-    splitloader_t* trainloader = malloc(sizeof(splitloader_t));
-    trainloader->length = NUM_TRAINING_FILES;
-    trainloader->samples = malloc(sizeof(sampletuple_t) * trainloader->length);
+splitloader_t* assemble_paths(char* path){
+    splitloader_t* splitloader = malloc(sizeof(splitloader_t));
+    splitloader->length = NUM_TRAINING_FILES;
+    splitloader->samples = malloc(sizeof(sampletuple_t) * splitloader->length);
 
-    DIR* train;
+    DIR* split;
     DIR* class_dir;
-    struct dirent* train_folders;
+    struct dirent* folders;
     struct dirent* class_files;
     char currpath[100];
     char filepath[MAX_FILENAME_LENGTH];
-    train = opendir(trainpath);
+    split = opendir(path);
 
     int filecount = 0;
-    if(train){
-        while((train_folders = readdir(train)) != NULL){
-            if(train_folders->d_name[0] != '.'){
-                strcpy(currpath, trainpath);
+    if(split){
+        while((folders = readdir(split)) != NULL){
+            if(folders->d_name[0] != '.'){
+                strcpy(currpath, path);
                 strcat(currpath, "/");
-                strcat(currpath, train_folders->d_name);
+                strcat(currpath, folders->d_name);
                 class_dir = opendir(currpath);
                 if(class_dir){
                     while((class_files = readdir(class_dir)) != NULL){
@@ -34,9 +34,9 @@ splitloader_t* assemble_train_paths(char* trainpath){
                             strcpy(filepath, currpath);
                             strcat(filepath, "/");
                             strcat(filepath, class_files->d_name);
-                            trainloader->samples[filecount].path = malloc(sizeof(char) * (MAX_FILENAME_LENGTH));
-                            strcpy(trainloader->samples[filecount].path, filepath);
-                            trainloader->samples[filecount++].label = atoi(train_folders->d_name);
+                            splitloader->samples[filecount].path = malloc(sizeof(char) * (MAX_FILENAME_LENGTH));
+                            strcpy(splitloader->samples[filecount].path, filepath);
+                            splitloader->samples[filecount++].label = atoi(folders->d_name);
                         }
                     }
                 }
@@ -44,68 +44,48 @@ splitloader_t* assemble_train_paths(char* trainpath){
             }
         }
     }
-    closedir(train);
-    return trainloader;
-}
-
-splitloader_t* assemble_test_paths(char* testpath){
-    splitloader_t* testloader = malloc(sizeof(splitloader_t));
-    testloader->length = NUM_TEST_FILES;
-    testloader->samples = malloc(sizeof(sampletuple_t) * testloader->length);
-
-    DIR* test;
-    DIR* class_dir;
-    struct dirent* test_folders;
-    struct dirent* class_files;
-    char currpath[100];
-    char filepath[MAX_FILENAME_LENGTH];
-    test = opendir(testpath);
-
-    int filecount = 0;
-    if(test){
-        while((test_folders = readdir(test)) != NULL){
-            if(test_folders->d_name[0] != '.'){
-                strcpy(currpath, testpath);
-                strcat(currpath, "/");
-                strcat(currpath, test_folders->d_name);
-                class_dir = opendir(currpath);
-                if(class_dir){
-                    while((class_files = readdir(class_dir)) != NULL){
-                        if(class_files->d_type == DT_REG){
-                            strcpy(filepath, currpath);
-                            strcat(filepath, "/");
-                            strcat(filepath, class_files->d_name);
-                            testloader->samples[filecount].path = malloc(sizeof(char) * MAX_FILENAME_LENGTH);
-                            strcpy(testloader->samples[filecount].path, filepath);
-                            testloader->samples[filecount++].label = atoi(test_folders->d_name);
-                        }
-                    }
-                }
-                closedir(class_dir);
-            }
-        }
-    }
-    closedir(test);
-    return testloader;
+    closedir(split);
+    splitloader->iterator = 0;
+    return splitloader;
 }
 
 void dataloader_destroy(dataloader_t* dataloader){
     return;
 }
 
-modeltuple_t* read_training_sample(dataloader_t* dataloader, int index){
+modeltuple_t* read_training_sample(dataloader_t* dataloader){
+    // TODO: ensure the iterator isn't at the end of the dataloader
     modeltuple_t* tuple = malloc(sizeof(modeltuple_t));
+    sampletuple_t* sample = &dataloader->trainloader->samples[dataloader->trainloader->iterator++];
+    tuple->input = read_bmp(sample->path);
+    tuple->label = onehot(sample->label, N_CLASSES);
+    DIM(tuple->input);
+    DIM(tuple->label);
+    return tuple;
+}
+
+modeltuple_t* read_training_batch(dataloader_t* dataloader, int batch_size){
+    // TODO: ensure the iterator isn't at the end of the dataloader
+    modeltuple_t* tuple = malloc(sizeof(modeltuple_t));
+    sampletuple_t* sample;
+    char** paths = malloc(sizeof(char*) * batch_size);
+    int* labels = malloc(sizeof(int) * batch_size);
+    for(int i = 0; i < batch_size; ++i){
+        sample = &dataloader->trainloader->samples[dataloader->trainloader->iterator++];
+        paths[i] = sample->path;
+        labels[i] = sample->label;
+    }
+    tuple->input = read_bmp_batch(paths, batch_size);
+    tuple->label = onehot_batch(labels, N_CLASSES, batch_size);
+    free(paths);
+    free(labels);
+    return tuple;
+}
+
+modeltuple_t* read_test_sample(dataloader_t* dataloader){
     return NULL;
 }
 
-modeltuple_t* read_training_batch(dataloader_t* dataloader, int index, int batch_size){
-    return NULL;
-}
-
-modeltuple_t* read_test_sample(dataloader_t* dataloader, int index){
-    return NULL;
-}
-
-modeltuple_t* read_test_batch(dataloader_t* dataloader, int index, int batch_size){
+modeltuple_t* read_test_batch(dataloader_t* dataloader, int batch_size){
     return NULL;
 }

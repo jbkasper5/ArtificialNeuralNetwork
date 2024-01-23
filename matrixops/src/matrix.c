@@ -59,6 +59,69 @@ matrix_t* xavier_bias_matrix(uint32_t layer_dim){
     return xavier_weight_matrix(1, layer_dim);
 }
 
+// read a bmp image and return a 1D flattened matrix
+matrix_t* read_bmp(char* path){
+    bmpheader_t header;
+    bmpinfoheader_t infoheader;
+    P("Parsing image '%s'\n", path);
+
+    // read necessary header information
+    FILE* f = fopen(path, "r");
+    fseek(f, 0, SEEK_SET);
+    fread(&header, 1, sizeof(bmpheader_t), f);
+    fread(&infoheader, 1, sizeof(bmpinfoheader_t), f);
+    fseek(f, header.offset, SEEK_SET);
+    matrix_t* mat = zero_matrix(infoheader.height * infoheader.width, 1);
+    uint8_t px;
+    for(int row = infoheader.height - 1; row >= 0; --row){
+        for(int col = 0; col < infoheader.width; ++col){
+            fread(&px, 1, sizeof(uint8_t), f);
+            mat->data[(row * infoheader.height) + col] = px;
+        }
+    }
+    return mat;
+}
+
+// read a batch of bmp images and assemble them into a 2d array
+matrix_t* read_bmp_batch(char** paths, int batch_size){
+    bmpheader_t header;
+    bmpinfoheader_t infoheader;
+    matrix_t* mat;
+    uint8_t px;
+    for(int sample_num = 0; sample_num < batch_size; ++sample_num){
+        FILE* f = fopen(paths[sample_num], "r");
+        fseek(f, 0, SEEK_SET);
+        fread(&header, 1, sizeof(bmpheader_t), f);
+        fread(&infoheader, 1, sizeof(bmpinfoheader_t), f);
+        fseek(f, header.offset, SEEK_SET);
+        if(!sample_num){
+            mat = zero_matrix(infoheader.width * infoheader.height, batch_size);
+        }
+        for(int row = infoheader.height - 1; row >= 0; --row){
+            for(int col = 0; col < infoheader.width; ++col){
+                fread(&px, 1, sizeof(uint8_t), f);
+                mat->data[(((row * infoheader.height) + col) * batch_size) + sample_num] = px;
+            }
+        }
+    }
+    return mat;
+}
+
+// one-hot matrix initialization for creating label matrices
+matrix_t* onehot(int index, int classes){
+    matrix_t* matrix = zero_matrix(classes, 1);
+    matrix->data[index] = 1;
+    return matrix;
+}
+
+matrix_t* onehot_batch(int* index, int classes, int batch_size){
+    matrix_t* matrix = zero_matrix(classes, batch_size);
+    for(int i = 0; i < batch_size; ++i){
+        SET(matrix, *index++, i, 1);
+    }
+    return matrix;
+}
+
 // display a matrix
 void show(matrix_t* mat){
     printf("\nMatrix (rows = %d, cols = %d): \n", mat->rows, mat->cols);
@@ -66,7 +129,8 @@ void show(matrix_t* mat){
         if(i % mat->cols == 0){
             printf("\n\t");
         }
-        printf("%f ", mat->data[i]);
+        // printf("%f ", mat->data[i]);
+        printf("%d ", mat->data[i] ? 1 : 0);
     }
     printf("\n\n");
 }
