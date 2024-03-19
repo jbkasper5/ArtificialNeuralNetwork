@@ -7,6 +7,14 @@ net_t* network_init(uint32_t input_nodes){
     return net;
 }
 
+config_t* config_init(uint32_t epochs, uint32_t batch_size, double learning_rate){
+    config_t* conf = malloc(sizeof(config_t));
+    conf->epochs = epochs;
+    conf->batch_size = batch_size;
+    conf->learning_rate = learning_rate;
+    return NULL;
+}
+
 void add_layer(net_t* network, uint32_t input_nodes, enum activation_functions func){
     if(network->n_layers == 0){
         network->layers = netlayer_init(input_nodes);

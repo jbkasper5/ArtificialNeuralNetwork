@@ -50,7 +50,16 @@ splitloader_t* assemble_paths(char* path){
 }
 
 void dataloader_destroy(dataloader_t* dataloader){
-    return;
+    for(int i = 0; i < dataloader->trainloader->length; i++){
+        free(dataloader->trainloader->samples[i].path);
+    }
+
+    for(int i = 0; i < dataloader->testloader->length; i++){
+        free(dataloader->testloader->samples[i].path);
+    }
+    free(dataloader->trainloader);
+    free(dataloader->testloader);
+    free(dataloader);
 }
 
 modeltuple_t* read_training_sample(dataloader_t* dataloader){
@@ -77,6 +86,8 @@ modeltuple_t* read_training_batch(dataloader_t* dataloader, int batch_size){
     }
     tuple->input = read_bmp_batch(paths, batch_size);
     tuple->label = onehot_batch(labels, N_CLASSES, batch_size);
+    DIM(tuple->input);
+    DIM(tuple->label);
     free(paths);
     free(labels);
     return tuple;
