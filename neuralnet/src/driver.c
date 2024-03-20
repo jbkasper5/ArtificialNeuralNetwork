@@ -30,5 +30,22 @@ int main(int argc, char** argv){
         pbar_tick(pbar);
         usleep(500000);
     }
+    pbar_destroy(pbar);
+
+    len = 100;
+    pbar = pbar_create(len);
+    for(int i = 0; i < len; ++i){
+        pbar_tick(pbar);
+        usleep(100000);
+    }
+    pbar_destroy(pbar);
+
+    len = 100;
+    pbar = pbar_create(len);
+    for(int i = 0; i < len; ++i){
+        pbar_tick(pbar);
+        usleep(100000);
+    }
+    pbar_destroy(pbar);
     return 0;
 }

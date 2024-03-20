@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define EXCESS_CHARACTERS 6 // '100%' = 4 chars, + 2 for progress bar delimiters, '|'
+
 typedef struct pbar_s pbar_t;
 
 struct pbar_s{
