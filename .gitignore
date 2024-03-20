@@ -1,6 +1,6 @@
 **/.DS_Store
-matrix_tracker.trace/*
-*.o
+**/matrix_tracker.trace
 exe
 dexe
 config.h
+**/bin
